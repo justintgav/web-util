@@ -12,15 +12,28 @@ def home():
 
 @app.route("/play_on_devices", methods=['POST'])
 def play_on_devices():
-    logging.error("***************" + str(request.get_json()))
+    #logging.error("***************" + str(request.get_json()))
     devices = request.get_json().get('device_ip_list')
     location = request.get_json().get('location')
 
     for device_ip in devices:
-        process = subprocess.Popen(['python3', DLNAP_LOCATION,'--ip',device_ip,'--play',location,'--volume','100'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(['python3', DLNAP_LOCATION,'--ip',device_ip,'--play',location], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
     
     return jsonify({'out':out.decode(),'err':err.decode()})
+
+@app.route("/max_volume", methods=['POST'])
+def max_volume():
+    #logging.error("***************" + str(request.get_json()))
+    devices = request.get_json().get('device_ip_list')
+    #location = request.get_json().get('location')
+
+    for device_ip in devices:
+        process = subprocess.Popen(['python3', DLNAP_LOCATION,'--ip',device_ip,'--volume','100'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+    
+    return jsonify({'out':out.decode(),'err':err.decode()})
+
 
 def get_devices():
     devices = dict()

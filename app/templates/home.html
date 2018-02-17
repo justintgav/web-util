@@ -1,8 +1,20 @@
 {% extends "base.html" %}
         
         {% block content %}
-        <button onclick="blastIt(mpdLoc)">Play MPD</button>
-        <button onclick="blastIt(spotLoc)">Play Spotify</button>
+        <p>Local:</p>
+        <button onclick="playLocation(mpdLoc)">MPD</button>
+        <button onclick="playLocation(spotLoc)">Spotify</button>
+        <br />
+        <hr />
+        <br />
+        <p>Internet:</p>
+        <button onclick="playLocation('http://ice1.somafm.com/groovesalad-256-mp3')">GrooveSalad (chill)</button>
+        <button onclick="playLocation('http://77.92.76.134:8525/')">DeepIn (deep house)</button>
+        <button onclick="playLocation('http://stream.wehouseradio.com:80/stream/2/')">WeHouse (house)</button>
+        <br />
+        <hr />
+        <br />
+        <button onclick="maxVolume()">Max Volume</button>
         {% endblock %}
         
         {% block script_extension %}
@@ -12,15 +24,9 @@
             var mpdLoc = "http://10.0.0.12:8000/mpd.mp3";
             var spotLoc = "http://10.0.0.12:8000/spotify.mp3";
             
-            function blastIt(loc) {
-                var ipList = [];
-                $.each(devices, function(k, v) {
-                    if (k.includes("Audio")) {
-                        ipList.push(v);
-                    }
-                  });
-                
-                var jsonData = JSON.stringify({ "device_ip_list": ipList, location: loc });
+            function playLocation(loc) {
+
+                var jsonData = JSON.stringify({ "device_ip_list": getAudiocasts(), location: loc });
                 $.ajax({
                     type: "POST",
                     url: "/web-util/play_on_devices",
@@ -38,6 +44,37 @@
                   });
             }
             
+            function maxVolume() {
+                var jsonData = JSON.stringify({ "device_ip_list": getAudiocasts() });
+                $.ajax({
+                    type: "POST",
+                    url: "/web-util/max_volume",
+                    data: jsonData,
+                    dataType: "json",
+                    contentType : "application/json",
+                    success: function(responseData){
+                      
+
+                        
+                      },
+                    error: function (errormessage) {
+                          //do something else
+                      }
+                  });
+                
+            }
+            
+            function getAudiocasts(){
+                var ipList = [];
+                $.each(devices, function(k, v) {
+                    if (k.includes("Audio")) {
+                        ipList.push(v);
+                    }
+                  });
+                
+                return ipList;
+                
+            }
             
         </script>
         {% endblock %}
