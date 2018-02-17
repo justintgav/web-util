@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+        
+        {% block content %}
+        <button onclick="blastIt(mpdLoc)">Play MPD</button>
+        <button onclick="blastIt(spotLoc)">Play Spotify</button>
+        {% endblock %}
+        
+        {% block script_extension %}
+        <script>
+            var devices = {{ devices|tojson|safe }};
+            
+            var mpdLoc = "http://10.0.0.12:8000/mpd.mp3";
+            var spotLoc = "http://10.0.0.12:8000/spotify.mp3";
+            
+            function blastIt(loc) {
+                var ipList = [];
+                $.each(devices, function(k, v) {
+                    if (k.includes("Audio")) {
+                        ipList.push(v);
+                    }
+                  });
+                
+                var jsonData = JSON.stringify({ "device_ip_list": ipList, location: loc });
+                $.ajax({
+                    type: "POST",
+                    url: "/web-util/play_on_devices",
+                    data: jsonData,
+                    dataType: "json",
+                    contentType : "application/json",
+                    success: function(responseData){
+                      
+
+                        
+                      },
+                    error: function (errormessage) {
+                          //do something else
+                      }
+                  });
+            }
+            
+            
+        </script>
+        {% endblock %}
